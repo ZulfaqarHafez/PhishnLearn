@@ -1,22 +1,49 @@
-# Importing flask module in the project is mandatory
-# An object of Flask class is our WSGI application.
-from flask import Flask
+from flask import Flask, request, render_template
+from functions import send_whatsapp_messages, load_tokens
+from twilio.rest import Client
 
-# Flask constructor takes the name of 
-# current module (__name__) as argument.
 app = Flask(__name__)
 
-# The route() function of the Flask class is a decorator, 
-# which tells the application which URL should call 
-# the associated function.
-@app.route('/')
-# ‘/’ URL is bound with hello_world() function.
-def hello_world():
-    return 'Hello World'
+# Twilio credentials
+twilio_whatsapp_number = 'whatsapp:+14155238886'
+recipient_phone_number = 'whatsapp:+6587506901'
 
-# main driver function
+#Declaring file path
+file_path = "token.txt"
+
+tokens = load_tokens(file_path)
+account_sid = tokens.get("account_sid")
+auth_token = tokens.get("auth_token")
+
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    success_message = None
+    error_message = None
+    if request.method == 'POST':
+        # Get the message from the form
+        message_body = request.form.get('message')
+        
+        # Initialize Twilio client
+        client = Client(account_sid, auth_token)
+        
+        # Send the message
+        try:
+            message = client.messages.create(
+                from_=twilio_whatsapp_number,
+                body=message_body,
+                to=recipient_phone_number
+            )
+            success_message = "Message sent successfully!"
+        except Exception as e:
+            error_message = f"Failed to send message. Error: {str(e)}"
+    
+    return render_template('index.html', success_message=success_message, error_message=error_message)
+
+@app.route('/control')
+def control_center():
+    return render_template('control_center.html')
+
+
 if __name__ == '__main__':
-
-    # run() method of Flask class runs the application 
-    # on the local development server.
-    app.run()
+    app.run(debug=True)
