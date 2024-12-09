@@ -48,6 +48,27 @@
     <!-- Main Content -->
     <div class="container my-4">
         <div class="row justify-content-center">
+            <!-- Generate Scam Message Section -->
+            <div class="col-md-6">
+                <div class="form-card">
+                    <h4 class="text-center mb-4">Generate Scam Message</h4>
+                    <form method="POST" action="/generate">
+                        <div class="mb-3">
+                            <label for="scam_type" class="form-label">Scam Type:</label>
+                            <input type="text" class="form-control" id="scam_type" name="scam_type" placeholder="e.g., Lottery/Prize Scam" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-grey btn-block">Generate Message</button>
+                        </div>
+                    </form>
+                    {% if generated_message %}
+                    <div class="mt-3">
+                        <label for="generated_message" class="form-label">Generated Message:</label>
+                        <textarea class="form-control" id="generated_message" rows="4" readonly>{{ generated_message }}</textarea>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
             <div class="col-md-6">
                 <div class="form-card">
                     <h4 class="text-center mb-4">Send a Phishing Test Message</h4>
